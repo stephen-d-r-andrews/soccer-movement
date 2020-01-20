@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import math
 
-rawdata = pickle.load(open('../train_data.pkl','rb'),encoding='latin1')
+rawdata = pickle.load(open('../../train_data.pkl','rb'),encoding='latin1')
 numseq = 7500
 
 numgoals = 0
@@ -42,8 +42,10 @@ speedTS = {}
 goalSEQ = []
 nogoalSEQ = []
 
+stepsize = 1
 
 for i in range(numseq):
+#for i in range(100):
     key = 'sequence_'+str(i+1)
     print(key)
     speedTS[key] = []
@@ -102,11 +104,11 @@ for i in range(numseq):
         goaldefbehindball += defbehindball
         goaldefbehindballarr.append(defbehindball)
 
-        goalspeedarr.append((distdef+distatt+distball)*1./(np.shape(seq)[0]-2))
-        goaldefspeedarr.append(distdef*1./(np.shape(seq)[0]-2))
-        goalattspeedarr.append(distatt*1./(np.shape(seq)[0]-2))
-        goalballspeedarr.append(distball*1./(np.shape(seq)[0]-2))
-        goaldiffspeedarr.append((distdef-distatt)*1./(np.shape(seq)[0]-2))
+        goalspeedarr.append((distdef+distatt+distball)*(1./(np.shape(seq)[0]-2))*(10./(23.*stepsize)))
+        goaldefspeedarr.append(distdef*(1./(np.shape(seq)[0]-2))*(10./(11.*stepsize)))
+        goalattspeedarr.append(distatt*(1./(np.shape(seq)[0]-2))*(10./(11.*stepsize)))
+        goalballspeedarr.append(distball*(1./(np.shape(seq)[0]-2))*(10./(1.*stepsize)))
+        goaldiffspeedarr.append((distdef-distatt)*(1./(np.shape(seq)[0]-2))*(10./(11.*stepsize)))
         goalSEQ.append(i) 
 
     else:
@@ -120,11 +122,11 @@ for i in range(numseq):
         nogoaldefbehindball += defbehindball
         nogoaldefbehindballarr.append(defbehindball)
 
-        nogoalspeedarr.append((distdef+distatt+distball)*1./(np.shape(seq)[0]-2))
-        nogoaldefspeedarr.append(distdef*1./(np.shape(seq)[0]-2))
-        nogoalattspeedarr.append(distatt*1./(np.shape(seq)[0]-2))
-        nogoalballspeedarr.append(distball*1./(np.shape(seq)[0]-2))
-        nogoaldiffspeedarr.append((distdef-distatt)*1./(np.shape(seq)[0]-2))
+        nogoalspeedarr.append((distdef+distatt+distball)*(1./(np.shape(seq)[0]-2))*(10./(23.*stepsize)))
+        nogoaldefspeedarr.append(distdef*(1./(np.shape(seq)[0]-2))*(10./(11.*stepsize)))
+        nogoalattspeedarr.append(distatt*(1./(np.shape(seq)[0]-2))*(10./(11.*stepsize)))
+        nogoalballspeedarr.append(distball*(1./(np.shape(seq)[0]-2))*(10./(1.*stepsize)))
+        nogoaldiffspeedarr.append((distdef-distatt)*(1./(np.shape(seq)[0]-2))*(10./(11.*stepsize)))
         nogoalSEQ.append(i) 
 
 print(goalballspeedarr)
@@ -137,7 +139,6 @@ if numnogoals>0:
 
 with open('speedTS.pkl', 'wb') as handle:
     pickle.dump((speedTS), handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
 f = plt.figure(0)
 x1 = np.sort(np.array(goalstartarr))
@@ -197,7 +198,6 @@ plt.legend([p1, p2], ['goal','no goal'],loc='lower right')
 plt.show()
 plt.savefig('numdefbehindball.png')
 
-
 f = plt.figure(4)
 x1 = np.sort(np.array(goalspeedarr))
 y1 = (1./numgoals)*np.arange(numgoals)
@@ -211,102 +211,3 @@ plt.legend([p1, p2], ['goal','no goal'],loc='lower right')
 plt.show()
 plt.savefig('speed.png')
 
-'''
-f = plt.figure(5)
-x1 = np.sort(np.array(goaldefspeedarr))
-y1 = (1./numgoals)*np.arange(numgoals)
-x2 = np.sort(np.array(nogoaldefspeedarr))
-y2 = (1./numnogoals)*np.arange(numnogoals)
-p1, = plt.plot(x1,y1)
-p2, = plt.plot(x2,y2)
-plt.xlabel('Average speed defensive team')
-plt.ylabel('cdf')
-plt.legend([p1, p2], ['goal','no goal'],loc='lower right')
-plt.show()
-plt.savefig('speed_defteam.png')
-
-
-f = plt.figure(6)
-x1 = np.sort(np.array(goalattspeedarr))
-y1 = (1./numgoals)*np.arange(numgoals)
-x2 = np.sort(np.array(nogoalattspeedarr))
-y2 = (1./numnogoals)*np.arange(numnogoals)
-p1, = plt.plot(x1,y1)
-p2, = plt.plot(x2,y2)
-plt.xlabel('Average speed attacking team')
-plt.ylabel('cdf')
-plt.legend([p1, p2], ['goal','no goal'],loc='lower right')
-plt.show()
-plt.savefig('speed_attteam.png')
-
-f = plt.figure(7)
-x1 = np.sort(np.array(goalballspeedarr))
-y1 = (1./numgoals)*np.arange(numgoals)
-x2 = np.sort(np.array(nogoalballspeedarr))
-y2 = (1./numnogoals)*np.arange(numnogoals)
-p1, = plt.plot(x1,y1)
-p2, = plt.plot(x2,y2)
-plt.xlabel('Average speed ball')
-plt.ylabel('cdf')
-plt.legend([p1, p2], ['goal','no goal'],loc='lower right')
-plt.show()
-plt.savefig('speed_ball.png')
-
-
-f = plt.figure(8)
-x1 = np.sort(np.array(goaldiffspeedarr))
-y1 = (1./numgoals)*np.arange(numgoals)
-x2 = np.sort(np.array(nogoaldiffspeedarr))
-y2 = (1./numnogoals)*np.arange(numnogoals)
-p1, = plt.plot(x1,y1)
-p2, = plt.plot(x2,y2)
-plt.xlabel('Average speed diff between defensive and attacking team')
-plt.ylabel('cdf')
-plt.legend([p1, p2], ['goal','no goal'],loc='lower right')
-plt.show()
-plt.savefig('speed_diff.png')
-
-
-
-f = plt.figure(9)
-plt.xlabel('time' )
-plt.ylabel('speed')
-
-for i in range(0,numseq,100):
-    key = 'sequence_'+str(i+1)
-    y1 = np.array(speedTS[key])
-    x1 = np.arange(len(speedTS[key]))
-    p1, = plt.plot(x1,y1)
-plt.show()
-plt.savefig('speedTS.png')
-
-
-f = plt.figure(10)
-plt.xlabel('time' )
-plt.ylabel('speed')
-
-for i in goalSEQ:
-#    print i+1
-    key = 'sequence_'+str(i+1)
-    y1 = np.array(speedTS[key])
-    x1 = np.arange(len(speedTS[key]))
-    p1, = plt.plot(x1,y1)
-    plt.show()
-    plt.savefig('GOALspeed/GOALspeedTS'+str(i+1)+'.png')
-    plt.close()
-
-
-f = plt.figure(10)
-plt.xlabel('time' )
-plt.ylabel('speed')
-
-for i in nogoalSEQ:
-#    print i+1
-    key = 'sequence_'+str(i+1)
-    y1 = np.array(speedTS[key])
-    x1 = np.arange(len(speedTS[key]))
-    p1, = plt.plot(x1,y1)
-    plt.show()
-    plt.savefig('NOGOALspeed/NOGOALspeedTS'+str(i+1)+'.png')
-    plt.close()
-'''
